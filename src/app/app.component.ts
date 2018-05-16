@@ -38,14 +38,16 @@ export class AppComponent implements OnInit, OnDestroy {
     if(product !== undefined) {
       product.qty=product.qty + 1;
       product.price=product.price+message.data['price'];
+      this.totalprice=this.totalprice+message.data['price'];
      } else {
       product = new Product();
       product.qty=1;
       product.price=message.data['price'];
       product.productname=message.data['productname'];
       this.productlist.push(product);
+      this.totalprice=this.totalprice+product.price;
     }
-    this.totalprice=this.totalprice+product.price;
+    
   }
 
   getProduct(productname) : Product {
