@@ -5,9 +5,10 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 export class Product {
   public productname:string;
   public code: string;
+  public cartprice: number;
   public price: number;
-  public rating: string;
-  public qty: number
+  public available: number;
+  public qty: number;
   constructor(){
    
   }
@@ -37,13 +38,16 @@ export class AppComponent implements OnInit, OnDestroy {
     let product=this.getProduct(message.data['productname']);
     if(product !== undefined) {
       product.qty=product.qty + 1;
-      product.price=product.price+message.data['price'];
+      product.cartprice=product.cartprice+message.data['price'];
       this.totalprice=this.totalprice+message.data['price'];
      } else {
       product = new Product();
       product.qty=1;
       product.price=message.data['price'];
       product.productname=message.data['productname'];
+      product.available=message.data['available'];
+      product.code=message.data['code'];
+      product.cartprice=message.data['price'];
       this.productlist.push(product);
       this.totalprice=this.totalprice+product.price;
     }
@@ -63,8 +67,23 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.windowListener();
   }
-
+  increment(product) {
+    if(product.qty >= 0 && product.qty < product.available) {
+      product.qty =product.qty + 1;
+      product.cartprice = product.cartprice + product.price;
+      this.totalprice = this.totalprice + product.price;
+      window.parent.postMessage(product, '*');
+    }
+  }
   
+  decrement(product) {
+    if(product.qty > 0 && product.qty <= product.available) {
+      product.qty =product.qty - 1;
+      product.cartprice = product.cartprice - product.price;
+      this.totalprice = this.totalprice - product.price;
+      window.parent.postMessage(product, '*');
+    }
+  }
 }
 
 //window.addEventListener('message', function(e) {
